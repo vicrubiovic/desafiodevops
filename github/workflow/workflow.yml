@@ -1,0 +1,40 @@
+name: Python CI + Docker Deploy to Render
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t desafiodevops:latest .
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run tests inside Docker
+        run: |
+          docker build -t desafiodevops:test .
+          docker run --rm desafiodevops:test python -m unittest discover -s tests
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Trigger deploy on Render
+        run: curl -X POST https://api.render.com/deploy/srv-d0v43d63jp1c73dp33jg?key=HJtuwMtULJw
