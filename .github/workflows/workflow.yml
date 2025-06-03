@@ -1,4 +1,4 @@
-name: Python CI + Docker Deploy to Render
+name: Python CI + Docker Deploy to Render (sem uses)
 
 on:
   push:
@@ -9,46 +9,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      # - name: Verificar existência do Dockerfile 
-      #   run: test -f Dockerfile
+      - name: Baixar repositório manualmente
+        run: |
+          git clone https://github.com/${{ github.repository }} .
+          echo "Código clonado."
 
       - name: Build Docker image
         run: docker build -t desafiodevops:latest .
-      
-      # - name: Setup do Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.10'
-      
-      # - name: Install dependencies
-      #   run: pip install -r requirements.txt
-
 
   test:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Baixar repositório manualmente
+        run: |
+          git clone https://github.com/${{ github.repository }} .
+          echo "Código clonado."
 
-      # - name: Setup do Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.10'
+      - name: Build Docker image para testes
+        run: docker build -t desafiodevops:test .
 
-      - name: Build Docker image 
-        run: docker build -t desafiodevops:test . 
-
-      - name: Run tests inside Docker
+      - name: Executar testes dentro do Docker
         run: docker run --rm desafiodevops:test python -m unittest discover
-      
+
   deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      
-      - name: Trigger Baleia
+      - name: Disparar Deploy (Render ou outro)
         run: curl -X POST ${{ secrets.BALEIA }}
