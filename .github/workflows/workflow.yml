@@ -4,33 +4,28 @@ on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      #clonando o conteudo do git
       - name: Checkout code
         uses: actions/checkout@v3
       
-      #validação da existencia do docker
-      - name: Verificar existência do Dockerfile 
-        run: test -f Dockerfile
+      # - name: Verificar existência do Dockerfile 
+      #   run: test -f Dockerfile
 
-      #construindo a imagem no docker
       - name: Build Docker image
         run: docker build -t desafiodevops:latest .
       
-      #insatalando o python
-      - name: Setup do Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+      # - name: Setup do Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.10'
       
-      #instalando dependencias
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      # - name: Install dependencies
+      #   run: pip install -r requirements.txt
+
 
   test:
     needs: build
@@ -39,10 +34,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup do Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+      # - name: Setup do Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.10'
 
       - name: Build Docker image 
         run: docker build -t desafiodevops:test . 
@@ -50,19 +45,10 @@ jobs:
       - name: Run tests inside Docker
         run: docker run --rm desafiodevops:test python -m unittest discover
       
-
-      #- name: Rodar testes unitários
-      #  run: python -m unittest test_app.py
-
   deploy:
     needs: test
-    #if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      #- name: Checkout code
-      #  uses: actions/checkout@v3
       
       - name: Trigger Baleia
         run: curl -X POST ${{ secrets.BALEIA }}
-        # run: curl -X POST https://desafiodevops-q791.onrender.com
-        #run: curl -X POST https://api.render.com/deploy/srv-d0v43d63jp1c73dp33jg?key=HJtuwMtULJw
