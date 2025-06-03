@@ -63,4 +63,5 @@ jobs:
       #  uses: actions/checkout@v3
       
       - name: Trigger deploy on Render
-        run: curl -X POST https://api.render.com/deploy/srv-d0v43d63jp1c73dp33jg?key=HJtuwMtULJw
+        run: curl -X POST https://desafiodevops-q791.onrender.com
+        #run: curl -X POST https://api.render.com/deploy/srv-d0v43d63jp1c73dp33jg?key=HJtuwMtULJw
